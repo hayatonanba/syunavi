@@ -76,3 +76,14 @@ model Authenticator {
  
   @@id([userId, credentialID])
 }
+
+
+model Company {
+ id        Int      @id @default(autoincrement())
+ name     String
+ state   String
+ createdAt DateTime @default(now())
+
+ userId String
+ user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
