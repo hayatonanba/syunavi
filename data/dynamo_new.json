@@ -1,0 +1,74 @@
+{
+  "userId": "uuid",
+  "userName": "ぽてきち",
+  "companies": [
+    {
+      "companyId": "uuid_fuga",
+      "companyName": "IIJ",
+      "flows": [
+        {
+          "flowId": "uuid_hoge",
+          "flowOrder": 1,
+          "flowName": "ES面接"
+        },
+        {
+          "flowId": "uuid_fuga",
+          "flowOrder": 2,
+          "flowName": "一次面接"
+        },
+        {
+          "flowId": "uuid_piyo",
+          "flowOrder": 3,
+          "flowName": "最終面接"
+        }
+      ]
+    },
+    {
+      "companyId": "uuid_piyo",
+      "companyName": "さくらインターネット",
+      "flows": [
+        {
+          "flowId": "uuid_hoge",
+          "flowOrder": 1,
+          "flowName": "ES面接"
+        },
+        {
+          "flowId": "uuid_fuga",
+          "flowOrder": 2,
+          "flowName": "一次面接"
+        },
+        {
+          "flowId": "uuid_piyo",
+          "flowOrder": 2,
+          "flowName": "最終面接"
+        }
+      ]
+    },
+    {
+      "companyId": "uuid_hoge_piyo",
+      "companyName": "ntt",
+      "flows": [
+        {
+          "flowId": "uuid_hoge",
+          "flowOrder": 1,
+          "flowName": "ES面接"
+        },
+        {
+          "flowId": "uuid_fuga",
+          "flowOrder": 2,
+          "flowName": "一次面接"
+        },
+        {
+          "flowId": "uuid_fuga",
+          "flowOrder": 3,
+          "flowName": "グループディスカッション"
+        },
+        {
+          "flowId": "uuid_piyo",
+          "flowOrder": 4,
+          "flowName": "最終面接"
+        }
+      ]
+    }
+  ]
+}

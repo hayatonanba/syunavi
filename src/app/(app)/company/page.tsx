@@ -11,110 +11,87 @@ import {
   TabsTrigger,
 } from "@/src/components/ui/tabs";
 import { Building2, Calendar, Clock } from "lucide-react";
+import Link from "next/link";
 
-// 企業情報の型
-type Company = {
-  companyId: string;
-  companyName: string;
-};
-
-// 面接のフロー情報の型
-type Flow = {
-  flowId: string;
-  flowOrder: number;
-  flowName: string;
-  companies: Company[]; // 企業は任意の数
-};
-
-// ユーザーデータの型
-type UserData = {
-  userId: string;
-  userName: string;
-  flows: Flow[]; // フローは任意の数
-};
-
-const userData: UserData = {
-  userId: "uuid",
-  userName: "ぽてきち",
-  flows: [
-    {
-      flowId: "uuid_hoge",
-      flowOrder: 1,
-      flowName: "一次面接",
-      companies: [
-        {
-          companyId: "uuid_fuga",
-          companyName: "IIJ",
-        },
-        {
-          companyId: "uuid_piyo",
-          companyName: "さくらインターネット",
-        },
-      ],
-    },
-    {
-      flowId: "uuid_hoge_fuga",
-      flowOrder: 2,
-      flowName: "最終面接",
-      companies: [
-        {
-          companyId: "uuid_hoge_piyo",
-          companyName: "ntt",
-        },
-      ],
-    },
-  ],
-};
+import { userData } from "@/data/userData";
 
 const page = () => {
+  const companyId = "uuid_fuga";
+  const companyData = userData.companies.find(
+    (company) => company.companyId === companyId
+  );
+  const { companyName, flows } = companyData!;
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       <Card className="mb-6">
         <CardHeader>
           <div className="flex items-center gap-5">
             <Building2 className="w-7 h-7" />
-            <CardTitle className="text-2xl font-bold">サンプル</CardTitle>
+            <CardTitle className="text-2xl font-bold">{companyName}</CardTitle>
           </div>
         </CardHeader>
       </Card>
 
-      <Tabs defaultValue="es" className="w-full">
+      <Tabs defaultValue={flows[0].flowId} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="es" className="flex items-center gap-2">
-            ES
-          </TabsTrigger>
-          <TabsTrigger value="interviews" className="flex items-center gap-2">
-            一次面接
-          </TabsTrigger>
-          <TabsTrigger value="links" className="flex items-center gap-2">
-            二次面接
-          </TabsTrigger>
-          <TabsTrigger value="memo" className="flex items-center gap-2">
-            最終面接
-          </TabsTrigger>
+          {flows.map((flow) => (
+            <TabsTrigger
+              key={flow.flowId}
+              value={flow.flowId}
+              className="flex items-center gap-2"
+            >
+              {flow.flowName}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="es">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center mb-4 gap-5">
-                <div className="flex items-center gap-2">
-                  <Calendar />
-                  <span>〇〇/〇〇/〇〇</span>
+        {flows.map((flow) => (
+          <TabsContent key={flow.flowId} value={flow.flowId}>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-4 gap-5">
+                  <div className="flex items-center gap-2">
+                    <Calendar />
+                    <span>〇〇/〇〇/〇〇</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock />
+                    <span>〇〇:〇〇</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock />
-                  <span>〇〇:〇〇</span>
+                <div className="flex flex-col gap-5 ">
+                  <div>
+                    {flow.questions?.map((question) => (
+                      <div key={question.questionId}>
+                        <h3 className="font-bold">{question.question}</h3>
+                        <p>{question.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <h3 className="font-bold">メモ</h3>
+                    {flow.memos?.map((memo) => (
+                      <p key={memo.memoId}>{memo.memo}</p>
+                    ))}
+                  </div>
+                  <div>
+                    <h3 className="font-bold">リンク集</h3>
+                    {flow.links?.map((link) => (
+                      <Link
+                        href={link.url}
+                        key={link.linkId}
+                        className="text-blue-700"
+                      >
+                        {link.title}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="mb-4">
-                <ul>
-                  <li></li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
