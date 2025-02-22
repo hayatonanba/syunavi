@@ -9,8 +9,9 @@ const Header = async () => {
       redirect("/");
     }
   return (
-    <header className="top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center">
+    <header className="relative top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+
         <div className="flex items-center space-x-2">
           <Image
             src="/landscape_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg"

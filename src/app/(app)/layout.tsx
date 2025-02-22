@@ -28,10 +28,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main
-          className={`bg-[url("/background.png")] bg-cover bg-no-repeat bg-center h-screen`}
-        >
-          {children}
+        <Header />
+
+        <main className="relative h-screen bg-[url('/background.png')] bg-cover bg-no-repeat bg-center">
+          <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
+          <div className="relative h-screen z-10 p-8">{children}</div>
         </main>
       </body>
     </html>
