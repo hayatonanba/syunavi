@@ -15,7 +15,9 @@ import Link from "next/link";
 
 import { userData } from "@/data/userData";
 
-const page = () => {
+import FlowDialog from "../../components/company/flow-dialog";
+
+const Page = () => {
   const companyId = "uuid_fuga";
   const companyData = userData.companies.find(
     (company) => company.companyId === companyId
@@ -34,17 +36,21 @@ const page = () => {
       </Card>
 
       <Tabs defaultValue={flows[0].flowId} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          {flows.map((flow) => (
-            <TabsTrigger
-              key={flow.flowId}
-              value={flow.flowId}
-              className="flex items-center gap-2"
-            >
-              {flow.flowName}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="flex items-center justify-between mb-6">
+          <TabsList className="grid w-full grid-cols-4">
+            {flows.map((flow) => (
+              <TabsTrigger
+                key={flow.flowId}
+                value={flow.flowId}
+                className="flex items-center gap-2"
+              >
+                {flow.flowName}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <FlowDialog />
+        </div>
 
         {flows.map((flow) => (
           <TabsContent key={flow.flowId} value={flow.flowId}>
@@ -97,4 +103,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
