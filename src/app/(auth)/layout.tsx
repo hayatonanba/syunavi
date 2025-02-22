@@ -10,7 +10,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header />
-        {children}
+        <main
+          className={`bg-[url("/background.png")] bg-cover bg-no-repeat bg-center h-screen flex justify-center`}
+        >
+          {children}
+        </main>
       </body>
     </html>
   );

@@ -8,6 +8,7 @@ export default function SignIn() {
         "use server";
         await signIn("google", { redirectTo: "/myPage" });
       }}
+      className="flex flex-col items-center space-y-4"
     >
       <button className="flex bg-[#F2F2F2] rounded-3xl px-2 py-1" type="submit">
         <Image
