@@ -1,0 +1,43 @@
+{
+  "userId": "uuid",
+  "userName": "ぽてきち",
+  "flows": [
+    {
+      "flowId": "uuid_hoge",
+      "flowOrder": 2,
+      "flowName": "一次面接",
+      "companies": [
+        {
+          "companyId": "uuid_fuga",
+          "companyName": "IIJ"
+        },
+        {
+          "companyId": "uuid_piyo",
+          "companyName": "さくらインターネット"
+        }
+      ]
+    },
+    {
+      "flowId": "uuid_hoge_fuga",
+      "flowOrder": 3,
+      "flowName": "最終面接",
+      "companies": [
+        {
+          "companyId": "uuid_hoge_piyo",
+          "companyName": "ntt"
+        }
+      ]
+    },
+    {
+      "flowId": "uuid_piyo",
+      "flowOrder": 1,
+      "flowName": "ES",
+      "companies": [
+        {
+          "companyId": "uuid_hoge_piyo",
+          "companyName": "ntt"
+        }
+      ]
+    }
+  ]
+}
