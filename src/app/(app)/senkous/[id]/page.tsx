@@ -1,88 +1,85 @@
 // app/senkous/[id]/page.tsx
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
-import { Building2, Calendar, Clock } from "lucide-react"
-import Link from "next/link"
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { Building2, Calendar, Clock } from "lucide-react";
+import Link from "next/link";
 
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/src/components/ui/card"
+} from "@/src/components/ui/card";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/src/components/ui/tabs"
+} from "@/src/components/ui/tabs";
 
-import FlowDialog from "../../../components/company/flow-dialog"
+import FlowDialog from "../../../components/company/flow-dialog";
 
 type FlowData = {
-  flowId: string
-  flowName: string
-  date?: string
-  content?: string
-  flowOrder?: number
-}
+  flowId: string;
+  flowName: string;
+  date?: string;
+  content?: string;
+  flowOrder?: number;
+};
 
 type SenkouData = {
-  senkouId: string
-  companyName: string
-  senkouName: string
-  userId?: string
-  status: number
-  flowStatus: number
-  flows: FlowData[]
-}
+  senkouId: string;
+  companyName: string;
+  senkouName: string;
+  userId?: string;
+  status: number;
+  flowStatus: number;
+  flows: FlowData[];
+};
 
 type PageProps = {
   params: {
-    id: string
-  }
-}
+    id: string;
+  };
+};
 
 export default async function SenkouDetailPage({ params }: PageProps) {
-  const session = await auth()
+  const session = await auth();
   if (!session?.user) {
-    redirect("/")
+    redirect("/");
   }
 
-  const senkou = await getSenkouById(params.id)
+  const senkou = await getSenkouById(params.id);
   if (!senkou) {
-    return <div>データが見つかりませんでした</div>
+    return <div>データが見つかりませんでした</div>;
   }
 
   if (!senkou.flows || senkou.flows.length === 0) {
     return (
       <div className="p-4">
-        <h1 className="font-bold text-xl mb-2">{senkou.companyName}</h1>
+        <h1 className="mb-2 font-bold text-xl">{senkou.companyName}</h1>
         <p>フロー情報がありません</p>
       </div>
-    )
+    );
   }
 
-  senkou.flows.sort((a, b) => (a.flowOrder || 0) - (b.flowOrder || 0))
+  senkou.flows.sort((a, b) => (a.flowOrder || 0) - (b.flowOrder || 0));
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="mx-auto max-w-4xl p-4">
       <Card className="mb-6">
         <CardHeader>
           <div className="flex items-center gap-5">
-            <Building2 className="w-7 h-7" />
-            <CardTitle className="text-2xl font-bold">
+            <Building2 className="h-7 w-7" />
+            <CardTitle className="font-bold text-2xl">
               {senkou.companyName}
             </CardTitle>
           </div>
         </CardHeader>
       </Card>
 
-      <Tabs
-        defaultValue={senkou.flows[0].flowId}
-        className="w-full"
-      >
-        <div className="flex items-center justify-between mb-6">
+      <Tabs defaultValue={senkou.flows[0].flowId} className="w-full">
+        <div className="mb-6 flex items-center justify-between">
           <TabsList className="grid w-full grid-cols-4">
             {senkou.flows.map((flow) => (
               <TabsTrigger
@@ -98,13 +95,10 @@ export default async function SenkouDetailPage({ params }: PageProps) {
         </div>
 
         {senkou.flows.map((flow) => (
-          <TabsContent
-            key={flow.flowId}
-            value={flow.flowId}
-          >
+          <TabsContent key={flow.flowId} value={flow.flowId}>
             <Card>
               <CardContent className="pt-6">
-                <div className="flex items-center mb-4 gap-5">
+                <div className="mb-4 flex items-center gap-5">
                   <div className="flex items-center gap-2">
                     <Calendar />
                     <span>{flow.date || "日付なし"}</span>
@@ -138,31 +132,30 @@ export default async function SenkouDetailPage({ params }: PageProps) {
         ))}
       </Tabs>
     </div>
-  )
+  );
 }
 
 async function getSenkouById(senkouId: string): Promise<SenkouData | null> {
   try {
     const res = await fetch(
       `https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous/${senkouId}`,
-      { method: "GET" }
-    )
+      { method: "GET" },
+    );
     if (!res.ok) {
-      return null
+      return null;
     }
 
-    const data = await res.json()
-    console.log("data", data)
+    const data = await res.json();
+    console.log("data", data);
 
-    const raw = data.body ? JSON.parse(data.body) : data
+    const raw = data.body ? JSON.parse(data.body) : data;
 
-    return transformToSenkouData(raw)
+    return transformToSenkouData(raw);
   } catch (error) {
-    console.error(error)
-    return null
+    console.error(error);
+    return null;
   }
 }
-
 
 function transformToSenkouData(raw: any): SenkouData {
   const {
@@ -173,28 +166,27 @@ function transformToSenkouData(raw: any): SenkouData {
     status = 0,
     flowStatus = 0,
     ...rest
-  } = raw
+  } = raw;
 
-
-  const recognizedTopKeys = [
+  const _recognizedTopKeys = [
     "senkouId",
     "companyName",
     "senkouName",
     "userId",
     "status",
     "flowStatus",
-  ]
+  ];
 
   const flows: FlowData[] = Object.keys(rest).map((key) => {
-    const flowObj = rest[key] || {}
+    const flowObj = rest[key] || {};
     return {
-      flowId: key,       
-      flowName: key,      
+      flowId: key,
+      flowName: key,
       date: flowObj.date,
       content: flowObj.content,
       flowOrder: flowObj.flowOrder,
-    }
-  })
+    };
+  });
 
   return {
     senkouId,
@@ -204,5 +196,5 @@ function transformToSenkouData(raw: any): SenkouData {
     status,
     flowStatus,
     flows,
-  }
+  };
 }

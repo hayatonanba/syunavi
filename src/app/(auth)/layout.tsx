@@ -11,7 +11,7 @@ export default function RootLayout({
       <body>
         <Header />
         <main
-          className={`bg-[url("/background.png")] bg-cover bg-no-repeat bg-center h-screen flex justify-center`}
+          className={`flex h-screen justify-center bg-[url("/background.png")] bg-center bg-cover bg-no-repeat`}
         >
           {children}
         </main>

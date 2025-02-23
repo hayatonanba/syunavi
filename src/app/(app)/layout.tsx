@@ -30,9 +30,9 @@ export default function RootLayout({
       >
         <Header />
 
-        <main className="relative h-screen bg-[url('/background.png')] bg-cover bg-no-repeat bg-center">
-          <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
-          <div className="relative h-screen z-10 p-8">{children}</div>
+        <main className="relative h-screen bg-[url('/background.png')] bg-center bg-cover bg-no-repeat">
+          <div className="absolute inset-0 z-0 bg-black opacity-40" />
+          <div className="relative z-10 h-screen p-8">{children}</div>
         </main>
       </body>
     </html>

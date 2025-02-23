@@ -17,12 +17,12 @@ const Header = async () => {
           <span className="font-bold">Job Hunt Summit</span>
         </div>
 
-        <span className="ml-2 text-sm text-muted-foreground hidden sm:inline-block">
+        <span className="ml-2 hidden text-muted-foreground text-sm sm:inline-block">
           あなたのキャリアの頂上を目指して
         </span>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-2">          
+          <nav className="flex items-center space-x-2">
             {session?.user && <SignOut />}
           </nav>
         </div>
