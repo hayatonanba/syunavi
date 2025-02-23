@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import type React from "react";
 import {
   Dialog,
   // DialogClose,
@@ -36,7 +36,7 @@ const FlowDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Plus
-          className="text-white absolute right-20 hover:cursor-pointer"
+          className="absolute right-20 text-white hover:cursor-pointer"
           // onClick={handlePlusClick}
         />
       </DialogTrigger>
@@ -48,7 +48,7 @@ const FlowDialog = () => {
             <div className="mb-4">
               <label
                 htmlFor="flowName"
-                className="block text-sm font-medium text-gray-700"
+                className="block font-medium text-gray-700 text-sm"
               >
                 フロー名
               </label>
@@ -58,14 +58,14 @@ const FlowDialog = () => {
                 name="flowName"
                 value={newFlowName}
                 onChange={(e) => setNewFlowName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-primary sm:text-sm"
                 required
               />
             </div>
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                className="inline-flex justify-center rounded-md border border-transparent bg-primary px-4 py-2 font-medium text-sm text-white shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 追加
               </button>

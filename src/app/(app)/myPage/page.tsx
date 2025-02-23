@@ -7,55 +7,60 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 
 export type UserAuthData = {
-    id? : string
-    name? : string | null
+  id?: string;
+  name?: string | null;
 };
 
 export default async function Page() {
-
-  const session = await auth()
-  if(!session?.user){
-    redirect("/")
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/");
   }
   // console.log(session?.user)
 
-  const allData = await getAllSenkou(session.user.id)
+  const allData = await getAllSenkou(session.user.id);
   const Data = Array.isArray(allData) ? allData : [];
 
   return (
     <div>
-      <div className="p-5"><PostButton userData={session?.user}/></div>
-      
-      <div className="flex justyfy-between gap-5">    
-        {Data.map((userData) => (
-          <Link href={`/senkous/${userData.senkouId}`} key={userData.senkouId} className="w-1/4">
-            <Card key={userData.senkouId} >
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-5">
-                  <Building2 />
-                  <h1 className="font-bold text-lg">{userData.companyName}</h1>
-                </div>
-                <button>編集</button>
-              </div>
-              <div className="rounded-2xl px-2 bg-blue-100 text-blue-700 w-fit">
-                <span>{getStatusText(Number(userData.status))}</span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <Calendar />
-                <span>〇〇/〇〇/〇〇</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock />
-                <span>〇〇:〇〇</span>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="p-5">
+        <PostButton userData={session?.user} />
+      </div>
 
+      <div className="justyfy-between flex gap-5">
+        {Data.map((userData) => (
+          <Link
+            href={`/senkous/${userData.senkouId}`}
+            key={userData.senkouId}
+            className="w-1/4"
+          >
+            <Card key={userData.senkouId}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-5">
+                    <Building2 />
+                    <h1 className="font-bold text-lg">
+                      {userData.companyName}
+                    </h1>
+                  </div>
+                  <button type="button">編集</button>
+                </div>
+                <div className="w-fit rounded-2xl bg-blue-100 px-2 text-blue-700">
+                  <span>{getStatusText(Number(userData.status))}</span>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2">
+                  <Calendar />
+                  <span>〇〇/〇〇/〇〇</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock />
+                  <span>〇〇:〇〇</span>
+                </div>
+              </CardContent>
+            </Card>
           </Link>
-          
         ))}
       </div>
     </div>
@@ -78,14 +83,17 @@ const getStatusText = (status: number | null) => {
 };
 
 async function getAllSenkou(userId: any) {
-    const response = await fetch(`https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous?userId=${userId}`, {
+  const response = await fetch(
+    `https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous?userId=${userId}`,
+    {
       method: "GET",
       headers: {
-        "Content-Type": "application/json"
-      }
-    });
-  
-    const data = await response.json();
-    // console.log("Get", data);
-    return data;
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const data = await response.json();
+  // console.log("Get", data);
+  return data;
 }

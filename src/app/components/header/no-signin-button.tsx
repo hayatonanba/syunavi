@@ -1,6 +1,4 @@
-// import { SignOut } from "@/src/app/components/sign-out";
-// import { auth } from "@/auth";
-import React from "react";
+
 import Image from "next/image";
 
 const Header = async () => {
@@ -16,7 +14,7 @@ const Header = async () => {
           />
           <span className="font-bold">Job Hunt Summit</span>
         </div>
-        <span className="ml-2 text-sm text-muted-foreground hidden sm:inline-block">
+        <span className="ml-2 hidden text-muted-foreground text-sm sm:inline-block">
           あなたのキャリアの頂上を目指して
         </span>
       </div>
