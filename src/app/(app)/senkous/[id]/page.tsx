@@ -1,3 +1,7 @@
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
+import { Building2, Calendar, Clock } from "lucide-react";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -10,19 +14,35 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/src/components/ui/tabs";
-import { Building2, Calendar, Clock } from "lucide-react";
-import Link from "next/link";
 
-import { userData } from "@/data/userData";
+import FlowDialog from "../../../components/company/flow-dialog";
 
-import FlowDialog from "../../components/company/flow-dialog";
 
-const Page = () => {
-  const companyId = "uuid_fuga";
-  const companyData = userData.companies.find(
-    (company) => company.companyId === companyId
-  );
-  const { companyName, flows } = companyData!;
+type SenkouData = {
+  senkouId: string
+  companyName: string
+  senkouName: string
+  status: number
+  flowStatus: string
+}
+
+type PageProps = {
+  params: {
+    id: string 
+  }
+}
+
+export default async function SenkouDetailPage({ params }: PageProps) {
+  const session = await auth()
+  if (!session?.user) {
+    redirect("/")  
+  }
+
+  const senkou = await getSenkouById(params.id)
+
+  if (!senkou) {
+    return <div>データが見つかりませんでした</div>
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -30,15 +50,15 @@ const Page = () => {
         <CardHeader>
           <div className="flex items-center gap-5">
             <Building2 className="w-7 h-7" />
-            <CardTitle className="text-2xl font-bold">{companyName}</CardTitle>
+            <CardTitle className="text-2xl font-bold">{senkou.companyName}</CardTitle>
           </div>
         </CardHeader>
       </Card>
 
-      <Tabs defaultValue={flows[0].flowId} className="w-full">
+      <Tabs defaultValue={senkou.flowStatus[0].flowId} className="w-full">
         <div className="flex items-center justify-between mb-6">
           <TabsList className="grid w-full grid-cols-4">
-            {flows.map((flow) => (
+            {senkou.flowStatus.map((flow) => (
               <TabsTrigger
                 key={flow.flowId}
                 value={flow.flowId}
@@ -52,7 +72,7 @@ const Page = () => {
           <FlowDialog />
         </div>
 
-        {flows.map((flow) => (
+        {senkou.flows.map((flow) => (
           <TabsContent key={flow.flowId} value={flow.flowId}>
             <Card>
               <CardContent className="pt-6">
@@ -101,6 +121,23 @@ const Page = () => {
       </Tabs>
     </div>
   );
-};
+}
 
-export default Page;
+async function getSenkouById(senkouId: string): Promise<SenkouData | null> {
+  try {
+    const res = await fetch(
+      `https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous/${senkouId}`,
+      {
+        method: "GET",
+      }
+    )
+    if (!res.ok) {
+      return null
+    }
+    const data = await res.json()
+    return data
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
