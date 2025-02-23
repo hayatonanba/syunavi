@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/src/components/ui/card";
-import { Building2, Clock } from "lucide-react";
-import { Calendar } from "lucide-react";
+import { Building2, Calendar } from "lucide-react";
 import PostButton from "../../components/postbutton/postButton";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -16,9 +15,12 @@ export default async function Page() {
   if (!session?.user) {
     redirect("/");
   }
-  // console.log(session?.user)
 
-  const allData = await getAllSenkou(session.user.id);
+  if (!session.user.id) {
+    redirect("/");
+  }
+
+  const allData = await getAllSenkou(session.user.id!);
   const Data = Array.isArray(allData) ? allData : [];
 
   return (
@@ -32,12 +34,11 @@ export default async function Page() {
             <PostButton userData={session?.user} />
           </div>
 
-          <div className="justyfy-between flex gap-5">
+          <div className="grid grid-cols-4 gap-5">
             {Data.map((userData) => (
               <Link
                 href={`/senkous/${userData.senkouId}`}
                 key={userData.senkouId}
-                className="w-1/4"
               >
                 <Card key={userData.senkouId}>
                   <CardHeader>
@@ -50,18 +51,22 @@ export default async function Page() {
                       </div>
                       <button type="button">編集</button>
                     </div>
-                    <div className="w-fit rounded-2xl bg-blue-100 px-2 text-blue-700">
-                      <span>{getStatusText(Number(userData.status))}</span>
+                    <span>{userData.senkouName}</span>
+                    <div className="w-fit rounded-2xl bg-blue-200 px-2 text-blue-800">
+                      <span>
+                        {getStatusText(Number(userData.status))}
+                        {userData.status === 0 && userData.flowStatus?.key
+                          ? `: ${userData.flowStatus.key}`
+                          : ""}
+                      </span>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-2">
                       <Calendar />
-                      <span>〇〇/〇〇/〇〇</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock />
-                      <span>〇〇:〇〇</span>
+                      <span>
+                        {userData.flowStatus?.value?.date ?? "日付未定"}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -89,18 +94,22 @@ const getStatusText = (status: number | null) => {
   }
 };
 
-async function getAllSenkou(userId: any) {
+async function getAllSenkou(userId: string) {
   const response = await fetch(
+<<<<<<< HEAD
     `https://omdcxdim5h.execute-api.us-east-1.amazonaws.com/prod/senkous?userId=${userId}`,
+=======
+    `${process.env.NEXT_PUBLIC_BASE_URL}?userId=${userId}`,
+
+>>>>>>> ca5cfeb36adf1088db3616a2073d16f7947ecdf0
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    },
+    }
   );
 
   const data = await response.json();
-  // console.log("Get", data);
   return data;
 }

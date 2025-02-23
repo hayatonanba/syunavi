@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import type { UserAuthData } from "../../(app)/myPage/page";
+import { useRouter } from "next/navigation";
 
 export default function PostButton(userData: { userData: UserAuthData }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,7 +13,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
   const [flows, setFlows] = useState([
     { flowname: "", content: "", date: "", floworder: 1 },
   ]);
-
+  const router = useRouter();
   const handleAddFlow = () => {
     setFlows([
       ...flows,
@@ -30,12 +31,13 @@ export default function PostButton(userData: { userData: UserAuthData }) {
 
   const handleChange = (index, field, value) => {
     const updatedFlows = flows.map((flow, i) =>
-      i === index ? { ...flow, [field]: value } : flow,
+      i === index ? { ...flow, [field]: value } : flow
     );
     setFlows(updatedFlows);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     const jsondata = JSON.stringify({
       userId: userData.userData.id,
       companyName: company,
@@ -56,12 +58,20 @@ export default function PostButton(userData: { userData: UserAuthData }) {
     console.log(jsondata);
 
     try {
+<<<<<<< HEAD
       const response = await fetch(
         "https://omdcxdim5h.execute-api.us-east-1.amazonaws.com/prod/senkous",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+=======
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+>>>>>>> ca5cfeb36adf1088db3616a2073d16f7947ecdf0
           },
           body: JSON.stringify({
             userId: userData.userData.id,
@@ -79,8 +89,25 @@ export default function PostButton(userData: { userData: UserAuthData }) {
               return acc;
             }, {}),
           }),
+
         },
-      );
+        body: JSON.stringify({
+          userId: userData.userData.id,
+          companyName: company,
+          senkouName: senkou,
+          status: status,
+          flowStatus: 1,
+          flows: flows.reduce((acc, flow) => {
+            const { flowname, content, date, floworder } = flow;
+            acc[flowname] = {
+              content,
+              ...(date && date !== "" ? { date } : {}),
+              flowOrder: floworder,
+            };
+            return acc;
+          }, {}),
+        }),
+      });
 
       if (response.ok) {
         console.log("success:", await response.json());
@@ -88,9 +115,11 @@ export default function PostButton(userData: { userData: UserAuthData }) {
         console.error("fail");
       }
     } catch (error) {
-      console.error("error", error);
+      console.log("error", error);
+    } finally {
+      router.push("/myPage");
+      router.refresh();
     }
-
     handleCloseModal();
   };
 
@@ -101,10 +130,11 @@ export default function PostButton(userData: { userData: UserAuthData }) {
       </Button>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-80 rounded-lg bg-white p-6 shadow-lg">
+          <div className="rounded-lg bg-white p-6 shadow-lg w-[500px]">
             <h2 className="mb-4 font-bold text-xl">企業情報を追加</h2>
-            <form>
-              <div className="space-y-4">
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-4 max-h-[400px] overflow-y-scroll">
+
                 <div>
                   <label className="block font-medium text-gray-700 text-sm">
                     企業名
@@ -203,7 +233,6 @@ export default function PostButton(userData: { userData: UserAuthData }) {
               </div>
               <div className="mt-6 flex justify-end space-x-3">
                 <button
-                  onClick={handleSubmit}
                   type="submit"
                   className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
                 >
