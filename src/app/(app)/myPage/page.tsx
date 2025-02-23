@@ -4,6 +4,7 @@ import { Calendar } from "lucide-react";
 import PostButton from "../../components/postbutton/postButton";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export type UserAuthData = {
     id? : string
@@ -27,7 +28,8 @@ export default async function Page() {
       
       <div className="flex justyfy-between gap-5">    
         {Data.map((userData) => (
-          <Card key={userData.senkouId} className="w-1/4">
+          <Link href={`/senkous/${userData.senkouId}`} key={userData.senkouId} className="w-1/4">
+            <Card key={userData.senkouId} >
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-5">
@@ -51,6 +53,9 @@ export default async function Page() {
               </div>
             </CardContent>
           </Card>
+
+          </Link>
+          
         ))}
       </div>
     </div>
@@ -72,7 +77,7 @@ const getStatusText = (status: number | null) => {
   }
 };
 
-async function getAllSenkou(userId) {
+async function getAllSenkou(userId: any) {
     const response = await fetch(`https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous?userId=${userId}`, {
       method: "GET",
       headers: {
