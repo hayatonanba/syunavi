@@ -25,6 +25,8 @@ type FlowData = {
   flowName: string;
   date?: string;
   content?: string;
+  memo?: string;
+  link?: string;
   flowOrder?: number;
 };
 
@@ -108,33 +110,31 @@ export default async function SenkouDetailPage({ params }: PageProps) {
               <TabsContent key={flow.flowId} value={flow.flowId}>
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="mb-4 flex items-center gap-5">
-                      <div className="flex items-center gap-2">
-                        <Calendar />
-                        <span>{flow.date || "日付なし"}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock />
-                        <span>時間は仮: 〇〇:〇〇</span>
-                      </div>
-                    </div>
-
                     <div className="flex flex-col gap-5">
-                      <div>
-                        <h3 className="font-bold">メモ</h3>
-                        <p>{flow.content}</p>
-                      </div>
-                      <div>
-                        <h3 className="font-bold">content</h3>
-                        <p>{flow.content}</p>
-                      </div>
-
-                      <div>
-                        <h3 className="font-bold">リンク集</h3>
-                        <Link href="#" className="text-blue-700">
-                          ダミーリンク
-                        </Link>
-                      </div>
+                      {flow.content && (
+                        <div >
+                          <div className="flex items-center gap-5">
+                            <Calendar />
+                            <span>{flow.date || "日付なし"}</span>
+                          </div>
+                          <div className="mt-5">
+                            <p>{flow.content}</p>
+                          </div>
+                        </div>
+                      )}
+                      {flow.memo && (
+                        <div>
+                          <p>{flow.memo}</p>
+                        </div>
+                      )}
+                      {flow.link && (
+                        <div>
+                          <Link href={flow.link} className="text-blue-700">
+                            {flow.link}
+                          </Link>
+                        </div>
+                      )}
+                      
                     </div>
                   </CardContent>
                   {senkou.flowStatus === flow.flowOrder && (
@@ -187,24 +187,34 @@ function transformToSenkouData(raw: any): SenkouData {
     ...rest
   } = raw;
 
-  const _recognizedTopKeys = [
-    "senkouId",
-    "companyName",
-    "senkouName",
-    "userId",
-    "status",
-    "flowStatus",
-  ];
+  
 
   const flows: FlowData[] = Object.keys(rest).map((key) => {
     const flowObj = rest[key] || {};
-    return {
-      flowId: key,
-      flowName: key,
-      date: flowObj.date,
-      content: flowObj.content,
-      flowOrder: flowObj.flowOrder,
-    };
+    if (key === "memo") {
+      return {
+        flowId: key,
+        flowName: "メモ",
+        memo: flowObj,
+        flowOrder: 100, // memo 用の固定順番
+      };
+    } else if (key === "link") {
+      return {
+        flowId: key,
+        flowName: "リンク集",
+        link: flowObj,
+        flowOrder: 101, // link 用の固定順番
+      };
+    } else{
+      return {
+        flowId: key,
+        flowName: key,
+        date: flowObj.date,
+        content: flowObj.content,
+        flowOrder: flowObj.flowOrder,
+      };
+    }
+    
   });
 
   return {
