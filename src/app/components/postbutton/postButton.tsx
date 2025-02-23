@@ -20,6 +20,14 @@ export default function PostButton(userData: { userData: UserAuthData }) {
     ]);
   };
 
+  const handleCloseModal = () => {
+    setCompany("");
+    setSenkou("");
+    setStatus(0);
+    setFlows([{ flowname: '', content: '', date: '', floworder: 1 }]);
+    setIsModalOpen(false);
+  }
+
   const handleChange = (index, field, value) => {
     const updatedFlows = flows.map((flow, i) =>
       i === index ? { ...flow, [field]: value } : flow
@@ -81,7 +89,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
       console.error("error", error);
     }
 
-    setIsModalOpen(false);
+    handleCloseModal();
   };
 
   return (
@@ -157,6 +165,9 @@ export default function PostButton(userData: { userData: UserAuthData }) {
                     <input
                       type="number"
                       placeholder="Flow Order"
+                      min={1}
+                      max={10}
+                      step={1}
                       value={flow.floworder}
                       onChange={(e) => handleChange(index, 'floworder', e.target.value)}
                       className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -173,7 +184,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
                 </button>
                 <button type="button"
                   className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleCloseModal}
                 >
                   閉じる
                 </button>
