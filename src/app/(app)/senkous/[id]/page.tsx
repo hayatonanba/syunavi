@@ -66,71 +66,78 @@ export default async function SenkouDetailPage({ params }: PageProps) {
   senkou.flows.sort((a, b) => (a.flowOrder || 0) - (b.flowOrder || 0));
 
   return (
-    <div className="mx-auto max-w-4xl p-4">
-      <Card className="mb-6">
-        <CardHeader>
-          <div className="flex items-center gap-5">
-            <Building2 className="h-7 w-7" />
-            <CardTitle className="font-bold text-2xl">
-              {senkou.companyName}
-            </CardTitle>
-          </div>
-        </CardHeader>
-      </Card>
+    <div className="h-[calc(100vh-4rem)] bg-[url('/bg2.png')] bg-center bg-cover bg-no-repeat">
+      <div className="h-full bg-slate-800/40 p-8">
+        <h1 className="font-bold text-5xl text-white">
+          Attack <span className="text-2xl">-選考情報詳細-</span>
+        </h1>
+        <div className="mx-auto max-w-4xl p-4">
+          <Card className="mb-6">
+            <CardHeader>
+              <div className="flex items-center gap-5">
+                <Building2 className="h-7 w-7" />
+                <CardTitle className="font-bold text-2xl">
+                  {senkou.companyName}
+                </CardTitle>
+              </div>
+            </CardHeader>
+          </Card>
 
-      <Tabs defaultValue={senkou.flows[0].flowId} className="w-full">
-        <div className="mb-6 flex items-center justify-between">
-          <TabsList className="grid w-full grid-cols-4">
+          <Tabs defaultValue={senkou.flows[0].flowId} className="w-full">
+            <div className="mb-6 flex items-center justify-between">
+              <TabsList className="grid w-full grid-cols-4">
+                {senkou.flows.map((flow) => (
+                  <TabsTrigger
+                    key={flow.flowId}
+                    value={flow.flowId}
+                    className="flex items-center gap-2"
+                  >
+                    {flow.flowName}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <FlowDialog />
+            </div>
+
             {senkou.flows.map((flow) => (
-              <TabsTrigger
-                key={flow.flowId}
-                value={flow.flowId}
-                className="flex items-center gap-2"
-              >
-                {flow.flowName}
-              </TabsTrigger>
+              <TabsContent key={flow.flowId} value={flow.flowId}>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="mb-4 flex items-center gap-5">
+                      <div className="flex items-center gap-2">
+                        <Calendar />
+                        <span>{flow.date || "日付なし"}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock />
+                        <span>時間は仮: 〇〇:〇〇</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-5">
+                      <div>
+                        <h3 className="font-bold">メモ</h3>
+                        <p>{flow.content}</p>
+                      </div>
+                      <div>
+                        <h3 className="font-bold">content</h3>
+                        <p>{flow.content}</p>
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold">リンク集</h3>
+                        <Link href="#" className="text-blue-700">
+                          ダミーリンク
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             ))}
-          </TabsList>
-          <FlowDialog />
+          </Tabs>
         </div>
-
-        {senkou.flows.map((flow) => (
-          <TabsContent key={flow.flowId} value={flow.flowId}>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="mb-4 flex items-center gap-5">
-                  <div className="flex items-center gap-2">
-                    <Calendar />
-                    <span>{flow.date || "日付なし"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock />
-                    <span>時間は仮: 〇〇:〇〇</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-5">
-                  <div>
-                    <h3 className="font-bold">メモ</h3>
-                    <p>{flow.content}</p>
-                  </div>
-                  <div>
-                    <h3 className="font-bold">content</h3>
-                    <p>{flow.content}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="font-bold">リンク集</h3>
-                    <Link href="#" className="text-blue-700">
-                      ダミーリンク
-                    </Link>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
-      </Tabs>
+      </div>
     </div>
   );
 }

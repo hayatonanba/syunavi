@@ -10,7 +10,10 @@ export default function SignIn() {
       }}
       className="flex flex-col items-center space-y-4"
     >
-      <button className="flex rounded-3xl bg-[#F2F2F2] px-2 py-1" type="submit">
+      <button
+        className="flex scale-110 rounded-3xl bg-[#F2F2F2] px-3 py-1"
+        type="submit"
+      >
         <Image
           src={"/google-logo.svg"}
           alt="Google Logo"

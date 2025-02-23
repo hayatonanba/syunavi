@@ -22,46 +22,53 @@ export default async function Page() {
   const Data = Array.isArray(allData) ? allData : [];
 
   return (
-    <div>
-      <div className="p-5">
-        <PostButton userData={session?.user} />
-      </div>
+    <div className="h-[calc(100vh-4rem)] bg-[url('/bg.png')] bg-center bg-cover bg-no-repeat">
+      <div className="h-full bg-slate-800/40 p-8">
+        <h1 className="font-bold text-5xl text-white">
+          BaseCamp <span className="text-2xl">-選考情報一覧-</span>
+        </h1>
+        <div>
+          <div className="p-5">
+            <PostButton userData={session?.user} />
+          </div>
 
-      <div className="justyfy-between flex gap-5">
-        {Data.map((userData) => (
-          <Link
-            href={`/senkous/${userData.senkouId}`}
-            key={userData.senkouId}
-            className="w-1/4"
-          >
-            <Card key={userData.senkouId}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-5">
-                    <Building2 />
-                    <h1 className="font-bold text-lg">
-                      {userData.companyName}
-                    </h1>
-                  </div>
-                  <button type="button">編集</button>
-                </div>
-                <div className="w-fit rounded-2xl bg-blue-100 px-2 text-blue-700">
-                  <span>{getStatusText(Number(userData.status))}</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Calendar />
-                  <span>〇〇/〇〇/〇〇</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock />
-                  <span>〇〇:〇〇</span>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+          <div className="justyfy-between flex gap-5">
+            {Data.map((userData) => (
+              <Link
+                href={`/senkous/${userData.senkouId}`}
+                key={userData.senkouId}
+                className="w-1/4"
+              >
+                <Card key={userData.senkouId}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-5">
+                        <Building2 />
+                        <h1 className="font-bold text-lg">
+                          {userData.companyName}
+                        </h1>
+                      </div>
+                      <button type="button">編集</button>
+                    </div>
+                    <div className="w-fit rounded-2xl bg-blue-100 px-2 text-blue-700">
+                      <span>{getStatusText(Number(userData.status))}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-2">
+                      <Calendar />
+                      <span>〇〇/〇〇/〇〇</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock />
+                      <span>〇〇:〇〇</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

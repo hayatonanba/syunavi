@@ -24,15 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-screen">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header />
 
-        <main className="relative h-screen bg-[url('/background.png')] bg-center bg-cover bg-no-repeat">
-          <div className="absolute inset-0 z-0 bg-black opacity-40" />
-          <div className="relative z-10 h-screen p-8">{children}</div>
+        <main>
+          <div className="relative z-10">{children}</div>
         </main>
       </body>
     </html>
