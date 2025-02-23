@@ -18,6 +18,7 @@ import {
 } from "@/src/components/ui/tabs";
 
 import FlowDialog from "../../../components/company/flow-dialog";
+import NextSenkouButton from "@/src/app/components/company/change-senkou-button";
 
 type FlowData = {
   flowId: string;
@@ -54,6 +55,8 @@ export default async function SenkouDetailPage({ params }: PageProps) {
     return <div>データが見つかりませんでした</div>;
   }
 
+  console.log(senkou.flowStatus);
+
   if (!senkou.flows || senkou.flows.length === 0) {
     return (
       <div className="p-4">
@@ -62,6 +65,9 @@ export default async function SenkouDetailPage({ params }: PageProps) {
       </div>
     );
   }
+
+  const defaultFlowId = senkou.flows.find(flow => flow.flowOrder === senkou.flowStatus)?.flowId
+  console.log("defaultflowid",defaultFlowId)
 
   senkou.flows.sort((a, b) => (a.flowOrder || 0) - (b.flowOrder || 0));
 
@@ -83,7 +89,7 @@ export default async function SenkouDetailPage({ params }: PageProps) {
             </CardHeader>
           </Card>
 
-          <Tabs defaultValue={senkou.flows[0].flowId} className="w-full">
+          <Tabs defaultValue={defaultFlowId} className="w-full">
             <div className="mb-6 flex items-center justify-between">
               <TabsList className="grid w-full grid-cols-4">
                 {senkou.flows.map((flow) => (
@@ -98,7 +104,6 @@ export default async function SenkouDetailPage({ params }: PageProps) {
               </TabsList>
               <FlowDialog />
             </div>
-
             {senkou.flows.map((flow) => (
               <TabsContent key={flow.flowId} value={flow.flowId}>
                 <Card>
@@ -132,6 +137,14 @@ export default async function SenkouDetailPage({ params }: PageProps) {
                       </div>
                     </div>
                   </CardContent>
+                  {senkou.flowStatus === flow.flowOrder && (
+                    <div className="flex justify-end">
+                      <NextSenkouButton
+                        senkouId={senkou.senkouId}
+                        flowStatus={senkou.flowStatus}
+                      />
+                    </div>
+                  )}
                 </Card>
               </TabsContent>
             ))}
@@ -144,10 +157,9 @@ export default async function SenkouDetailPage({ params }: PageProps) {
 
 async function getSenkouById(senkouId: string): Promise<SenkouData | null> {
   try {
-    const res = await fetch(
-      `https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous/${senkouId}`,
-      { method: "GET" },
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/${senkouId}`, {
+      method: "GET",
+    });
     if (!res.ok) {
       return null;
     }

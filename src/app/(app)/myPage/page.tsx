@@ -18,7 +18,11 @@ export default async function Page() {
   }
   // console.log(session?.user)
 
-  const allData = await getAllSenkou(session.user.id);
+  if (!session.user.id) {
+    redirect("/");
+  }
+
+  const allData = await getAllSenkou(session.user.id!);
   const Data = Array.isArray(allData) ? allData : [];
 
   return (
@@ -89,15 +93,15 @@ const getStatusText = (status: number | null) => {
   }
 };
 
-async function getAllSenkou(userId: any) {
+async function getAllSenkou(userId: string) {
   const response = await fetch(
-    `https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous?userId=${userId}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}?userId=${userId}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    },
+    }
   );
 
   const data = await response.json();
