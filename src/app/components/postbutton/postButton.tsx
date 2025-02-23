@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import type { UserAuthData } from "../../(app)/myPage/page";
 import { useRouter } from "next/navigation";
 
@@ -31,7 +31,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
 
   const handleChange = (index, field, value) => {
     const updatedFlows = flows.map((flow, i) =>
-      i === index ? { ...flow, [field]: value } : flow
+      i === index ? { ...flow, [field]: value } : flow,
     );
     setFlows(updatedFlows);
   };
@@ -102,10 +102,10 @@ export default function PostButton(userData: { userData: UserAuthData }) {
       </Button>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="rounded-lg bg-white p-6 shadow-lg w-[500px]">
+          <div className="w-[500px] rounded-lg bg-white p-6 shadow-lg">
             <h2 className="mb-4 font-bold text-xl">企業情報を追加</h2>
             <form onSubmit={handleSubmit}>
-              <div className="space-y-4 max-h-[400px] overflow-y-scroll">
+              <div className="max-h-[400px] space-y-4 overflow-y-scroll">
                 <div>
                   <label className="block font-medium text-gray-700 text-sm">
                     企業名
