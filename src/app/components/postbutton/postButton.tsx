@@ -57,7 +57,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
 
     try {
       const response = await fetch(
-        "https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous",
+        "https://omdcxdim5h.execute-api.us-east-1.amazonaws.com/prod/senkous",
         {
           method: "POST",
           headers: {
