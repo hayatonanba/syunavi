@@ -68,8 +68,10 @@ export default async function SenkouDetailPage({ params }: PageProps) {
     );
   }
 
-  const defaultFlowId = senkou.flows.find(flow => flow.flowOrder === senkou.flowStatus)?.flowId
-  console.log("defaultflowid",defaultFlowId)
+  const defaultFlowId = senkou.flows.find(
+    (flow) => flow.flowOrder === senkou.flowStatus,
+  )?.flowId;
+  console.log("defaultflowid", defaultFlowId);
 
   senkou.flows.sort((a, b) => (a.flowOrder || 0) - (b.flowOrder || 0));
 

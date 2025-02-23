@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/src/components/ui/button";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 type NextSenkouButtonProps = {
   senkouId: string;
@@ -22,7 +21,7 @@ const NextSenkouButton = ({ senkouId, flowStatus }: NextSenkouButtonProps) => {
           body: JSON.stringify({
             flowStatus: flowStatus,
           }),
-        }
+        },
       );
       if (!response.ok) {
         console.log("おめでとう");
@@ -45,7 +44,7 @@ const NextSenkouButton = ({ senkouId, flowStatus }: NextSenkouButtonProps) => {
           body: JSON.stringify({
             flowStatus: flowStatus,
           }),
-        }
+        },
       );
       if (!response.ok) {
         console.log("おめでとう");
