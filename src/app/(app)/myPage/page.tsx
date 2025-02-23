@@ -5,6 +5,7 @@ import PostButton from "../../components/postbutton/postButton";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import DeleteButton from "../../components/deleteButton.tsx/deleteButton";
 
 export type UserAuthData = {
   id?: string;
@@ -44,6 +45,8 @@ export default async function Page() {
                     </h1>
                   </div>
                   <button type="button">編集</button>
+                  
+                  <DeleteButton senkouId={userData.senkouId} />
                 </div>
                 <div className="w-fit rounded-2xl bg-blue-100 px-2 text-blue-700">
                   <span>{getStatusText(Number(userData.status))}</span>
