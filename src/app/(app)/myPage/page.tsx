@@ -5,39 +5,39 @@ import PostButton from "../../components/postbutton/postButton";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-export type UserData = {
+export type UserAuthData = {
     id? : string
     name? : string | null
 };
 
 export default async function Page() {
-  await createSenkou()
-  const userData = await getSenkou("uuid-4649")
-  const companies = userData.flows.map(flow => flow.companies).flat();
-  console.log(companies);
+
   const session = await auth()
   if(!session?.user){
     redirect("/")
   }
   // console.log(session?.user)
 
+  const allData = await getAllSenkou(session.user.id)
+  const Data = Array.isArray(allData) ? allData : [];
+
   return (
     <div>
       <div className="p-5"><PostButton userData={session?.user}/></div>
       
       <div className="flex justyfy-between gap-5">    
-        {companies.map((company) => (
-          <Card key={company.companyId} className="w-1/4">
+        {Data.map((userData) => (
+          <Card key={userData.senkouId} className="w-1/4">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-5">
                   <Building2 />
-                  <h1 className="font-bold text-lg">{company.companyName}</h1>
+                  <h1 className="font-bold text-lg">{userData.companyName}</h1>
                 </div>
                 <button>編集</button>
               </div>
               <div className="rounded-2xl px-2 bg-blue-100 text-blue-700 w-fit">
-                <span>選考中</span>
+                <span>{getStatusText(Number(userData.status))}</span>
               </div>
             </CardHeader>
             <CardContent>
@@ -57,43 +57,23 @@ export default async function Page() {
   );
 }
 
-async function createSenkou() {
-    const response = await fetch("https://8s6eohdua5.execute-api.us-east-1.amazonaws.com/prod/senkous", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        userId: "uuid-4649",
-        userName: "potekiti",
-        flows: [
-          {
-            flowId: "uuid_hoge",
-            flowOrder: 1,
-            flowName: "一次面接",
-            companies: [
-              { companyId: "uuid_fuga", companyName: "IIJ" },
-              { companyId: "uuid_piyo", companyName: "さくらインターネット" }
-            ]
-          },
-          {
-            flowId: "uuid_hoge_fuga",
-            flowOrder: 2,
-            flowName: "最終面接",
-            companies: [
-              { companyId: "uuid_hoge_piyo", companyName: "NTTドコモ" }
-            ]
-          }
-        ]
-      })
-    });
-  
-    const data = await response.json();
-    console.log("Created:", data);
-}
+const getStatusText = (status: number | null) => {
+  switch (status) {
+    case 0:
+      return "選考中";
+    case 1:
+      return "内定";
+    case 2:
+      return "不合格";
+    case 3:
+      return "お見送り";
+    default:
+      return "----";
+  }
+};
 
-async function getSenkou(userId) {
-    const response = await fetch(`https://8s6eohdua5.execute-api.us-east-1.amazonaws.com/prod/senkous/${userId}`, {
+async function getAllSenkou(userId) {
+    const response = await fetch(`https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous?userId=${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -101,5 +81,6 @@ async function getSenkou(userId) {
     });
   
     const data = await response.json();
+    // console.log("Get", data);
     return data;
 }

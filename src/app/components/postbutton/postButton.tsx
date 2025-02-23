@@ -2,38 +2,48 @@
 
 import { Button } from "@/src/components/ui/button";
 import { useState } from "react";
-import { UserData } from "../../(app)/myPage/page";
+import { UserAuthData } from "../../(app)/myPage/page";
 
 
-export default function PostButton(userData : {userData : UserData}) {
+export default function PostButton(userData : {userData : UserAuthData}) {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [company, setCompany] = useState("");
-  const [job, setJob] = useState("");
-  const [situation, setSituation] = useState("");
+  const [senkou, setSenkou] = useState("");
+  const [status, setStatus] = useState<number | null>(0);
+  const [content, setContent] = useState("");
   const [date, setDate] = useState("");
 
   const handleSubmit = async () => {
 
+    const jsondata = JSON.stringify({
+      "userId": userData.userData.id,
+      "companyName": company,
+      "senkouName": senkou,
+      "status": status,
+      "flowStatus": 1,
+      "flows": {
+        "ES": { "content": content, ...(date && date !== "" ? { date } : {}), "flowOrder": 1 },
+      }
+    })
+
+    console.log(jsondata)
+
     try {
-      const response = await fetch("https://8s6eohdua5.execute-api.us-east-1.amazonaws.com/prod/senkous", {
+      const response = await fetch("https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          userId: userData.userData.id,
-          userName: userData.userData.name,
-          flows: [
-            {
-              flowId: "uuid_h",
-              flowOrder: 1,
-              flowName: "一次面接",
-              companies: [
-                { companyId: "uuid_f", companyName: company },
-              ]
-            }
-          ]
+          "userId": userData.userData.id,
+          "companyName": company,
+          "senkouName": senkou,
+          "status": status,
+          "flowStatus": 1,
+          "flows": {
+            "ES": { "content": content, "flowOrder": 1 },
+          }
         })
       });
 
@@ -68,26 +78,34 @@ export default function PostButton(userData : {userData : UserData}) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">職種</label>
+                  <label className="block text-sm font-medium text-gray-700">選考名</label>
                   <input
                     type="text"
-                    value={job}
-                    onChange={(e) => setJob(e.target.value)}
+                    value={senkou}
+                    onChange={(e) => setSenkou(e.target.value)}
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">状況</label>
                   <select
-                    value={situation}
-                    onChange={(e) => setSituation(e.target.value)}
+                    onChange={(e) => setStatus(Number(e.target.value))}
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   >
-                    <option>選考中</option>
-                    <option>内定</option>
-                    <option>不合格</option>
-                    <option>お見送り</option>
+                    <option value={0}>選考中</option>
+                    <option value={1}>内定</option>
+                    <option value={2}>不合格</option>
+                    <option value={3}>お見送り</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">内容</label>
+                  <input
+                    type="text"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">日付</label>
@@ -111,7 +129,7 @@ export default function PostButton(userData : {userData : UserData}) {
                   onClick={() => setIsModalOpen(false)}
                 >
                   閉じる
-            </button>
+                </button>
               </div>
             </form>
           </div>
