@@ -96,12 +96,8 @@ const getStatusText = (status: number | null) => {
 
 async function getAllSenkou(userId: string) {
   const response = await fetch(
-<<<<<<< HEAD
-    `https://omdcxdim5h.execute-api.us-east-1.amazonaws.com/prod/senkous?userId=${userId}`,
-=======
     `${process.env.NEXT_PUBLIC_BASE_URL}?userId=${userId}`,
 
->>>>>>> ca5cfeb36adf1088db3616a2073d16f7947ecdf0
     {
       method: "GET",
       headers: {
