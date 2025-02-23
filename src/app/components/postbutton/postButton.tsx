@@ -58,10 +58,29 @@ export default function PostButton(userData: { userData: UserAuthData }) {
     console.log(jsondata);
 
     try {
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userData.userData.id,
+            companyName: company,
+            senkouName: senkou,
+            status: status,
+            flowStatus: 1,
+            flows: flows.reduce((acc, flow) => {
+              const { flowname, content, date, floworder } = flow;
+              acc[flowname] = {
+                content,
+                ...(date && date !== "" ? { date } : {}),
+                flowOrder: floworder,
+              };
+              return acc;
+            }, {}),
+          }),
+
         },
         body: JSON.stringify({
           userId: userData.userData.id,
@@ -102,10 +121,11 @@ export default function PostButton(userData: { userData: UserAuthData }) {
       </Button>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-80 rounded-lg bg-white p-6 shadow-lg">
+          <div className="rounded-lg bg-white p-6 shadow-lg w-[500px]">
             <h2 className="mb-4 font-bold text-xl">企業情報を追加</h2>
             <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[400px] overflow-y-scroll">
+
                 <div>
                   <label className="block font-medium text-gray-700 text-sm">
                     企業名
