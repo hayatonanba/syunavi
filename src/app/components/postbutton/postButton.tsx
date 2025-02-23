@@ -58,38 +58,10 @@ export default function PostButton(userData: { userData: UserAuthData }) {
     console.log(jsondata);
 
     try {
-<<<<<<< HEAD
-      const response = await fetch(
-        "https://omdcxdim5h.execute-api.us-east-1.amazonaws.com/prod/senkous",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-=======
-
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
->>>>>>> ca5cfeb36adf1088db3616a2073d16f7947ecdf0
-          },
-          body: JSON.stringify({
-            userId: userData.userData.id,
-            companyName: company,
-            senkouName: senkou,
-            status: status,
-            flowStatus: 1,
-            flows: flows.reduce((acc, flow) => {
-              const { flowname, content, date, floworder } = flow;
-              acc[flowname] = {
-                content,
-                ...(date && date !== "" ? { date } : {}),
-                flowOrder: floworder,
-              };
-              return acc;
-            }, {}),
-          }),
-
         },
         body: JSON.stringify({
           userId: userData.userData.id,
@@ -134,7 +106,6 @@ export default function PostButton(userData: { userData: UserAuthData }) {
             <h2 className="mb-4 font-bold text-xl">企業情報を追加</h2>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4 max-h-[400px] overflow-y-scroll">
-
                 <div>
                   <label className="block font-medium text-gray-700 text-sm">
                     企業名
