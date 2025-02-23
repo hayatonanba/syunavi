@@ -96,7 +96,9 @@ export default function PostButton(userData: { userData: UserAuthData }) {
 
   return (
     <div>
-      <Button onClick={() => setIsModalOpen(true)}>企業情報を追加する</Button>
+      <Button onClick={() => setIsModalOpen(true)} className="border-[1px]">
+        企業情報を追加する
+      </Button>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-80 rounded-lg bg-white p-6 shadow-lg">
