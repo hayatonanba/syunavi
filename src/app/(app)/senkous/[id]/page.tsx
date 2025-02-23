@@ -145,7 +145,7 @@ export default async function SenkouDetailPage({ params }: PageProps) {
 async function getSenkouById(senkouId: string): Promise<SenkouData | null> {
   try {
     const res = await fetch(
-      `https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous/${senkouId}`,
+      `https://omdcxdim5h.execute-api.us-east-1.amazonaws.com/prod/senkous/${senkouId}`,
       { method: "GET" },
     );
     if (!res.ok) {
