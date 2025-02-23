@@ -5,14 +5,27 @@ import { useState } from "react";
 import { UserAuthData } from "../../(app)/myPage/page";
 
 
-export default function PostButton(userData : {userData : UserAuthData}) {
-  
+export default function PostButton(userData: { userData: UserAuthData }) {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [company, setCompany] = useState("");
   const [senkou, setSenkou] = useState("");
   const [status, setStatus] = useState<number | null>(0);
-  const [content, setContent] = useState("");
-  const [date, setDate] = useState("");
+  const [flows, setFlows] = useState([{ flowname: '', content: '', date: '', floworder: 1 }]);
+
+  const handleAddFlow = () => {
+    setFlows([
+      ...flows,
+      { flowname: '', content: '', date: '', floworder: flows.length + 1 },
+    ]);
+  };
+
+  const handleChange = (index, field, value) => {
+    const updatedFlows = flows.map((flow, i) =>
+      i === index ? { ...flow, [field]: value } : flow
+    );
+    setFlows(updatedFlows);
+  };
 
   const handleSubmit = async () => {
 
@@ -22,9 +35,15 @@ export default function PostButton(userData : {userData : UserAuthData}) {
       "senkouName": senkou,
       "status": status,
       "flowStatus": 1,
-      "flows": {
-        "ES": { "content": content, ...(date && date !== "" ? { date } : {}), "flowOrder": 1 },
-      }
+      "flows": flows.reduce((acc, flow) => {
+        const { flowname, content, date, floworder } = flow;
+        acc[flowname] = {
+          content,
+          ...(date && date !== "" ? { date } : {}),
+          flowOrder: floworder
+        };
+        return acc;
+      }, {})
     })
 
     console.log(jsondata)
@@ -41,9 +60,15 @@ export default function PostButton(userData : {userData : UserAuthData}) {
           "senkouName": senkou,
           "status": status,
           "flowStatus": 1,
-          "flows": {
-            "ES": { "content": content, "flowOrder": 1 },
-          }
+          "flows": flows.reduce((acc, flow) => {
+            const { flowname, content, date, floworder } = flow;
+            acc[flowname] = {
+              content,
+              ...(date && date !== "" ? { date } : {}),
+              flowOrder: floworder
+            };
+            return acc;
+          }, {})
         })
       });
 
@@ -59,10 +84,10 @@ export default function PostButton(userData : {userData : UserAuthData}) {
     setIsModalOpen(false);
   };
 
-    return (
-      <div>
-        <Button onClick={() => setIsModalOpen(true)}>企業情報を追加する</Button>
-        {isModalOpen && (
+  return (
+    <div>
+      <Button onClick={() => setIsModalOpen(true)}>企業情報を追加する</Button>
+      {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80">
             <h2 className="text-xl font-bold mb-4">企業情報を追加</h2>
@@ -98,24 +123,46 @@ export default function PostButton(userData : {userData : UserAuthData}) {
                     <option value={3}>お見送り</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">内容</label>
-                  <input
-                    type="text"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">日付</label>
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}                    
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
+                <button type="button" onClick={handleAddFlow}>
+                  Add Flow
+                </button>
+
+                {flows.map((flow, index) => (
+                  <div key={index} className="flow-group">
+                    <label className="block text-sm font-medium text-gray-700">フロー</label>
+                    <input
+                      type="text"
+                      value={flow.flowname}
+                      onChange={(e) => handleChange(index, 'flowname', e.target.value)}
+                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+
+                    <label className="block text-sm font-medium text-gray-700">内容</label>
+                    <input
+                      type="text"
+                      value={flow.content}
+                      onChange={(e) => handleChange(index, 'content', e.target.value)}
+                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+
+                    <label className="block text-sm font-medium text-gray-700">日付</label>
+                    <input
+                      type="date"
+                      value={flow.date}
+                      onChange={(e) => handleChange(index, 'date', e.target.value)}
+                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+
+                    <label className="block text-sm font-medium text-gray-700">フロー順</label>
+                    <input
+                      type="number"
+                      placeholder="Flow Order"
+                      value={flow.floworder}
+                      onChange={(e) => handleChange(index, 'floworder', e.target.value)}
+                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                  </div>
+                ))}
               </div>
               <div className="mt-6 flex justify-end space-x-3">
                 <button onClick={handleSubmit}
@@ -135,6 +182,6 @@ export default function PostButton(userData : {userData : UserAuthData}) {
           </div>
         </div>
       )}
-      </div>
-    );
+    </div>
+  );
 }
