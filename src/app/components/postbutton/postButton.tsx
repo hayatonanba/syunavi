@@ -57,7 +57,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
 
     try {
       const response = await fetch(
-        "https://yq0fype0f5.execute-api.us-east-1.amazonaws.com/prod/senkous",
+        "https://omdcxdim5h.execute-api.us-east-1.amazonaws.com/prod/senkous",
         {
           method: "POST",
           headers: {
@@ -101,10 +101,10 @@ export default function PostButton(userData: { userData: UserAuthData }) {
       </Button>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-80 rounded-lg bg-white p-6 shadow-lg">
+          <div className="rounded-lg bg-white p-6 shadow-lg w-[500px]">
             <h2 className="mb-4 font-bold text-xl">企業情報を追加</h2>
             <form>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[400px] overflow-y-scroll">
                 <div>
                   <label className="block font-medium text-gray-700 text-sm">
                     企業名
