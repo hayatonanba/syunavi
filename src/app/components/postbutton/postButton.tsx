@@ -10,10 +10,16 @@ export default function PostButton(userData: { userData: UserAuthData }) {
   const [company, setCompany] = useState("");
   const [senkou, setSenkou] = useState("");
   const [status, setStatus] = useState<number | null>(0);
+  
+  // 独立した state を追加
+  const [companyMemo, setCompanyMemo] = useState("");
+  const [linkMemo, setLinkMemo] = useState("");
+
   const [flows, setFlows] = useState([
     { flowname: "", content: "", date: "", floworder: 1 },
   ]);
   const router = useRouter();
+
   const handleAddFlow = () => {
     setFlows([
       ...flows,
@@ -25,34 +31,53 @@ export default function PostButton(userData: { userData: UserAuthData }) {
     setCompany("");
     setSenkou("");
     setStatus(0);
+    setCompanyMemo("");
+    setLinkMemo("");
     setFlows([{ flowname: "", content: "", date: "", floworder: 1 }]);
     setIsModalOpen(false);
   };
 
   const handleChange = (index, field, value) => {
     const updatedFlows = flows.map((flow, i) =>
-      i === index ? { ...flow, [field]: value } : flow,
+      i === index ? { ...flow, [field]: value } : flow
     );
     setFlows(updatedFlows);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    // 既存の flows 配列からオブジェクトを作成
+    const flowsData = flows.reduce((acc, flow) => {
+      const { flowname, content, date, floworder } = flow;
+      // flowname が設定されている場合のみ追加
+      if (flowname) {
+        acc[flowname] = {
+          content,
+          ...(date && date !== "" ? { date } : {}),
+          flowOrder: floworder,
+        };
+      }
+      return acc;
+    }, {});
+
+    // 企業メモとリンク集を固定の flowOrder で追加（date は含めない）
+    flowsData["企業メモ"] = {
+      content: companyMemo,
+      flowOrder: 0,
+    };
+    flowsData["リンク集"] = {
+      content: linkMemo,
+      flowOrder: -1,
+    };
+
     const jsondata = JSON.stringify({
       userId: userData.userData.id,
       companyName: company,
       senkouName: senkou,
       status: status,
       flowStatus: 1,
-      flows: flows.reduce((acc, flow) => {
-        const { flowname, content, date, floworder } = flow;
-        acc[flowname] = {
-          content,
-          ...(date && date !== "" ? { date } : {}),
-          flowOrder: floworder,
-        };
-        return acc;
-      }, {}),
+      flows: flowsData,
     });
 
     console.log(jsondata);
@@ -63,22 +88,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userId: userData.userData.id,
-          companyName: company,
-          senkouName: senkou,
-          status: status,
-          flowStatus: 1,
-          flows: flows.reduce((acc, flow) => {
-            const { flowname, content, date, floworder } = flow;
-            acc[flowname] = {
-              content,
-              ...(date && date !== "" ? { date } : {}),
-              flowOrder: floworder,
-            };
-            return acc;
-          }, {}),
-        }),
+        body: jsondata,
       });
 
       if (response.ok) {
@@ -102,39 +112,41 @@ export default function PostButton(userData: { userData: UserAuthData }) {
       </Button>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-[500px] rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="mb-4 font-bold text-xl">企業情報を追加</h2>
+          <div className="w-[500px] rounded-lg bg-slate-600 p-6 shadow-lg">
+            <h2 className="mb-4 font-bold text-xl text-white">
+              企業情報を追加
+            </h2>
             <form onSubmit={handleSubmit}>
-              <div className="max-h-[400px] space-y-4 overflow-y-scroll">
+              <div className="max-h-[400px] space-y-4 overflow-y-scroll px-6">
                 <div>
-                  <label className="block font-medium text-gray-700 text-sm">
+                  <label className="block mb-1 font-medium text-white text-sm">
                     企業名
                   </label>
                   <input
                     type="text"
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="block w-full pl-2 h-8 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-gray-700 text-sm">
+                  <label className="block mb-1 font-medium text-white text-sm">
                     選考名
                   </label>
                   <input
                     type="text"
                     value={senkou}
                     onChange={(e) => setSenkou(e.target.value)}
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="block w-full pl-2 h-8 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-gray-700 text-sm">
+                  <label className="block mb-1 font-medium text-white text-sm">
                     状況
                   </label>
                   <select
                     onChange={(e) => setStatus(Number(e.target.value))}
-                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="block w-full h-8 pl-2 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   >
                     <option value={0}>選考中</option>
                     <option value={1}>内定</option>
@@ -142,65 +154,97 @@ export default function PostButton(userData: { userData: UserAuthData }) {
                     <option value={3}>お見送り</option>
                   </select>
                 </div>
-                <button type="button" onClick={handleAddFlow}>
-                  Add Flow
-                </button>
-
+                {/** 企業メモ（独立した入力フィールド） */}
+                <div>
+                  <label className="block mb-1 font-medium text-white text-sm">
+                    企業メモ
+                  </label>
+                  <textarea
+                    value={companyMemo}
+                    onChange={(e) => setCompanyMemo(e.target.value)}
+                    className="block w-full px-2 py-2 h-32 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  />
+                </div>
+                {/** リンク集（独立した入力フィールド） */}
+                <div>
+                  <label className="block mb-1 font-medium text-white text-sm">
+                    リンク集
+                  </label>
+                  <textarea
+                    value={linkMemo}
+                    onChange={(e) => setLinkMemo(e.target.value)}
+                    className="block w-full px-2 py-2 h-32 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  />
+                </div>
+                <hr />
+                {/** 既存の動的なフロー入力 */}
                 {flows.map((flow, index) => (
-                  <div key={index} className="flow-group">
-                    <label className="block font-medium text-gray-700 text-sm">
-                      フロー
-                    </label>
-                    <input
-                      type="text"
-                      value={flow.flowname}
-                      onChange={(e) =>
-                        handleChange(index, "flowname", e.target.value)
-                      }
-                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
-
-                    <label className="block font-medium text-gray-700 text-sm">
-                      内容
-                    </label>
-                    <input
-                      type="text"
-                      value={flow.content}
-                      onChange={(e) =>
-                        handleChange(index, "content", e.target.value)
-                      }
-                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
-
-                    <label className="block font-medium text-gray-700 text-sm">
-                      日付
-                    </label>
-                    <input
-                      type="date"
-                      value={flow.date}
-                      onChange={(e) =>
-                        handleChange(index, "date", e.target.value)
-                      }
-                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
-
-                    <label className="block font-medium text-gray-700 text-sm">
-                      フロー順
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Flow Order"
-                      min={1}
-                      max={10}
-                      step={1}
-                      value={flow.floworder}
-                      onChange={(e) =>
-                        handleChange(index, "floworder", e.target.value)
-                      }
-                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
+                  <div key={index} className="flow-group space-y-4">
+                    <div>
+                      <label className="block mb-1 font-medium text-white text-sm">
+                        フロー
+                      </label>
+                      <input
+                        type="text"
+                        value={flow.flowname}
+                        onChange={(e) =>
+                          handleChange(index, "flowname", e.target.value)
+                        }
+                        className="block w-full pl-2 h-8 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 font-medium text-white text-sm">
+                        選考メモ
+                      </label>
+                      <textarea
+                        value={flow.content}
+                        onChange={(e) =>
+                          handleChange(index, "content", e.target.value)
+                        }
+                        className="block w-full px-2 py-2 h-32 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 font-medium text-white text-sm">
+                        日付
+                      </label>
+                      <input
+                        type="date"
+                        value={flow.date}
+                        onChange={(e) =>
+                          handleChange(index, "date", e.target.value)
+                        }
+                        className="block h-8 pl-2 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 font-medium text-white text-sm">
+                        フロー順
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Flow Order"
+                        min={1}
+                        max={10}
+                        step={1}
+                        value={flow.floworder}
+                        onChange={(e) =>
+                          handleChange(index, "floworder", e.target.value)
+                        }
+                        className="block pl-2 h-8 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <hr />
                   </div>
                 ))}
+                <button
+                  type="button"
+                  onClick={handleAddFlow}
+                  className="text-white bg-stone-800 py-2 px-3 rounded "
+                >
+                  フローを追加
+                </button>
               </div>
               <div className="mt-6 flex justify-end space-x-3">
                 <button

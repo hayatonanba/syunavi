@@ -112,7 +112,7 @@ export default async function SenkouDetailPage({ params }: PageProps) {
               <TabsContent key={flow.flowId} value={flow.flowId}>
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-5 min-h-[400px]">
                       {flow.content && (
                         <div >
                           <div className="flex items-center gap-5">
@@ -139,14 +139,7 @@ export default async function SenkouDetailPage({ params }: PageProps) {
                       
                     </div>
                   </CardContent>
-                  {senkou.flowStatus === flow.flowOrder && (
-                    <div className="flex justify-end">
-                      <NextSenkouButton
-                        senkouId={senkou.senkouId}
-                        flowStatus={senkou.flowStatus}
-                      />
-                    </div>
-                  )}
+
                 </Card>
               </TabsContent>
             ))}
