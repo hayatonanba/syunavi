@@ -1,7 +1,7 @@
 // app/senkous/[id]/page.tsx
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { Building2, Calendar, Clock } from "lucide-react";
+import { Building2, Calendar, Clock, Pencil } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -19,6 +19,8 @@ import {
 
 import FlowDialog from "../../../components/company/flow-dialog";
 import NextSenkouButton from "@/src/app/components/company/change-senkou-button";
+import EditButton from "@/src/app/components/editButton/editButton";
+import FlowEditButton from "@/src/app/components/editButton/editButton";
 
 type FlowData = {
   flowId: string;
@@ -52,26 +54,20 @@ export default async function SenkouDetailPage({ params }: PageProps) {
     redirect("/");
   }
 
-  const senkou = await getSenkouById(params.id);
-  if (!senkou) {
-    return <div>データが見つかりませんでした</div>;
+  const id = params?.id;
+
+  if (!id) {
+    return <div>パラメータがありません</div>;
   }
 
-  console.log(senkou.flowStatus);
-
-  if (!senkou.flows || senkou.flows.length === 0) {
-    return (
-      <div className="p-4">
-        <h1 className="mb-2 font-bold text-xl">{senkou.companyName}</h1>
-        <p>フロー情報がありません</p>
-      </div>
-    );
+  const senkou = await getSenkouById(id);
+  if (!senkou) {
+    return <div>データが見つかりませんでした</div>;
   }
 
   const defaultFlowId = senkou.flows.find(
     (flow) => flow.flowOrder === senkou.flowStatus,
   )?.flowId;
-  console.log("defaultflowid", defaultFlowId);
 
   senkou.flows.sort((a, b) => (a.flowOrder || 0) - (b.flowOrder || 0));
 
@@ -118,25 +114,24 @@ export default async function SenkouDetailPage({ params }: PageProps) {
                           <div className="flex items-center gap-5">
                             <Calendar />
                             <span>{flow.date || "日付なし"}</span>
+                            <FlowEditButton 
+                              senkouId={senkou.senkouId}
+                              flowId={flow.flowId}
+                              initialContent={flow.content}
+                              initialDate={flow.date}
+                            />
                           </div>
                           <div className="mt-5">
                             <p>{flow.content}</p>
                           </div>
                         </div>
                       )}
-                      {flow.memo && (
-                        <div>
-                          <p>{flow.memo}</p>
-                        </div>
-                      )}
+                      {flow.memo && <p>{flow.memo}</p>}
                       {flow.link && (
-                        <div>
-                          <Link href={flow.link} className="text-blue-700">
-                            {flow.link}
-                          </Link>
-                        </div>
+                        <Link href={flow.link} className="text-blue-700">
+                          {flow.link}
+                        </Link>
                       )}
-                      
                     </div>
                   </CardContent>
                   {senkou.flowStatus === flow.flowOrder && (
