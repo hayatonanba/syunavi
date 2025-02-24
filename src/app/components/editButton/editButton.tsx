@@ -41,11 +41,13 @@ export default function FlowEditButton({ senkouId, flowId, initialContent, initi
       alert("保存しました。");
       
     } catch (error) {
-      console.error("リクエストエラー:", error);
-    }finally{
+      router.push(`/senkous/${senkouId}`)
       router.refresh();
-      location.reload();
+    }finally{
+      router.push(`/senkous/${senkouId}`)
+      router.refresh();
     }
+    setIsOpen(false)
   };
 
   return (

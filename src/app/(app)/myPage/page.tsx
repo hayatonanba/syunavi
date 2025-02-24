@@ -54,7 +54,13 @@ export default async function Page() {
                     </div>
                   </div>
                   <span>{userData.senkouName}</span>
-                  <div className="w-fit rounded-2xl bg-blue-200 px-2 text-blue-800">
+                  <div
+                    className={`w-fit rounded-2xl px-3 py-1 ${
+                      Number(userData.status) == 1
+                        ? "bg-yellow-200 text-yellow-800"
+                        : "bg-blue-200 text-blue-800"
+                    }`}
+                  >
                     <span>
                       {getStatusText(Number(userData.status))}
                       {userData.status === 0 && userData.flowStatus?.key
@@ -87,7 +93,7 @@ export default async function Page() {
   );
 }
 
-const getStatusText = (status: number | null) => {
+export const getStatusText = (status: number | null) => {
   switch (status) {
     case 0:
       return "選考中";
@@ -118,7 +124,6 @@ async function getAllSenkou(userId: string) {
   return data;
 }
 
-
 export async function handleDelete(senkouId: string) {
   try {
     const response = await fetch(
@@ -128,7 +133,7 @@ export async function handleDelete(senkouId: string) {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     // 成功しても `fetch` の挙動によってエラー扱いされる可能性があるのでチェック
