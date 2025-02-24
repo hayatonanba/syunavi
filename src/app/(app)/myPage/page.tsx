@@ -105,18 +105,19 @@ const getStatusText = (status: number | null) => {
 async function getAllSenkou(userId: string) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}?userId=${userId}`,
-
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    },
+      cache: "no-store",
+    }
   );
 
   const data = await response.json();
   return data;
 }
+
 
 export async function handleDelete(senkouId: string) {
   try {
