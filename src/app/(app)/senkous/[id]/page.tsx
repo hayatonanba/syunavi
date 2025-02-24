@@ -19,8 +19,8 @@ import {
 
 import FlowDialog from "../../../components/company/flow-dialog";
 import NextSenkouButton from "@/src/app/components/company/change-senkou-button";
-import EditButton from "@/src/app/components/editButton/editButton";
 import FlowEditButton from "@/src/app/components/editButton/editButton";
+import { getStatusText } from "../../myPage/page";
 
 type FlowData = {
   flowId: string;
@@ -66,10 +66,15 @@ export default async function SenkouDetailPage({ params }: PageProps) {
   }
 
   const defaultFlowId = senkou.flows.find(
-    (flow) => flow.flowOrder === senkou.flowStatus,
+    (flow) => flow.flowOrder === senkou.flowStatus
   )?.flowId;
 
   senkou.flows.sort((a, b) => (a.flowOrder || 0) - (b.flowOrder || 0));
+
+  // flowOrder の最大値を取得
+  const maxStatus = Math.max(
+    ...senkou.flows.map((flow) => flow.flowOrder || 0)
+  );
 
   return (
     <div className="h-[calc(100vh-4rem)] bg-[url('/bg2.png')] bg-center bg-cover bg-no-repeat">
@@ -80,23 +85,51 @@ export default async function SenkouDetailPage({ params }: PageProps) {
         <div className="mx-auto max-w-4xl p-4">
           <Card className="mb-6">
             <CardHeader>
-              <div className="flex items-center gap-5">
-                <Building2 className="h-7 w-7" />
-                <CardTitle className="font-bold text-2xl">
-                  {senkou.companyName}
-                </CardTitle>
+              <div className="flex items-center justify-between gap-5">
+                <div className="flex items-center gap-4">
+                  <Building2 className="h-7 w-7" />
+                  <CardTitle className="font-bold text-2xl">
+                    {senkou.companyName}
+                  </CardTitle>
+                  <div>{senkou.senkouName}</div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`w-fit rounded-2xl px-3 py-1 ${
+                      senkou.status == 1
+                        ? "bg-yellow-200 text-yellow-800"
+                        : "bg-blue-200 text-blue-800"
+                    }`}
+                  >
+                    <span>
+                      {getStatusText(Number(senkou.status))}
+                      {senkou.status === 0 &&
+                        ": " +
+                          senkou.flows.find(
+                            (flow) => flow.flowOrder === senkou.flowStatus
+                          )?.flowName}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <NextSenkouButton
+                      senkouId={senkou.senkouId}
+                      flowStatus={senkou.flowStatus}
+                      maxStatus={maxStatus}
+                    />
+                  </div>
+                </div>
               </div>
             </CardHeader>
           </Card>
-
           <Tabs defaultValue={defaultFlowId} className="w-full">
             <div className="mb-6 flex items-center justify-between">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="w-full flex gap-2 justify-between px-10 bg-slate-700">
                 {senkou.flows.map((flow) => (
                   <TabsTrigger
                     key={flow.flowId}
                     value={flow.flowId}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-slate-200 text-slate-800 min-w-24"
                   >
                     {flow.flowName}
                   </TabsTrigger>
@@ -105,16 +138,16 @@ export default async function SenkouDetailPage({ params }: PageProps) {
               <FlowDialog />
             </div>
             {senkou.flows.map((flow) => (
-              <TabsContent key={flow.flowId} value={flow.flowId}>
+              <TabsContent key={flow.flowOrder} value={flow.flowId}>
                 <Card>
                   <CardContent className="pt-6">
                     <div className="flex flex-col gap-5 min-h-[400px]">
                       {flow.content && (
-                        <div >
+                        <div>
                           <div className="flex items-center gap-5">
                             <Calendar />
                             <span>{flow.date || "日付なし"}</span>
-                            <FlowEditButton 
+                            <FlowEditButton
                               senkouId={senkou.senkouId}
                               flowId={flow.flowId}
                               initialContent={flow.content}
@@ -134,7 +167,6 @@ export default async function SenkouDetailPage({ params }: PageProps) {
                       )}
                     </div>
                   </CardContent>
-
                 </Card>
               </TabsContent>
             ))}
@@ -177,8 +209,6 @@ function transformToSenkouData(raw: any): SenkouData {
     ...rest
   } = raw;
 
-  
-
   const flows: FlowData[] = Object.keys(rest).map((key) => {
     const flowObj = rest[key] || {};
     if (key === "memo") {
@@ -195,7 +225,7 @@ function transformToSenkouData(raw: any): SenkouData {
         link: flowObj,
         flowOrder: 101, // link 用の固定順番
       };
-    } else{
+    } else {
       return {
         flowId: key,
         flowName: key,
@@ -204,7 +234,6 @@ function transformToSenkouData(raw: any): SenkouData {
         flowOrder: flowObj.flowOrder,
       };
     }
-    
   });
 
   return {
