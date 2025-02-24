@@ -1,7 +1,7 @@
 // app/senkous/[id]/page.tsx
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { Building2, Calendar, Clock, Pencil } from "lucide-react";
+import { Building2, Calendar, Clock, Dice1, Pencil } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -29,7 +29,7 @@ type FlowData = {
   content?: string;
   memo?: string;
   link?: string;
-  flowOrder?: number;
+  flowOrder: number;
 };
 
 type SenkouData = {
@@ -144,15 +144,25 @@ export default async function SenkouDetailPage({ params }: PageProps) {
                     <div className="flex flex-col gap-5 min-h-[400px]">
                       {flow.content && (
                         <div>
-                          <div className="flex items-center gap-5">
-                            <Calendar />
-                            <span>{flow.date || "日付なし"}</span>
+                          <div className="flex items-center justify-between gap-5">
+                            {flow.date && (
+                              <div className="flex gap-2 items-center">
+                                <Calendar />
+                                <span>{flow.date}</span>
+                              </div>
+                            )
+                            }
+                            <div className="bg-slate-700 text-white flex items-center px-3 py-2 rounded gap-2">
+
+                            編集する
                             <FlowEditButton
                               senkouId={senkou.senkouId}
                               flowId={flow.flowId}
                               initialContent={flow.content}
                               initialDate={flow.date}
+                              flowOrder={flow.flowOrder}
                             />
+                            </div>
                           </div>
                           <div className="mt-5">
                             <p>{flow.content}</p>

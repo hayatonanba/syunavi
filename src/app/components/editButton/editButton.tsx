@@ -6,7 +6,7 @@ import { Button } from "@/src/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { useRouter } from "next/navigation";
 
-export default function FlowEditButton({ senkouId, flowId, initialContent, initialDate }: { senkouId: string; flowId: string; initialContent?: string; initialDate?: string }) {
+export default function FlowEditButton({ senkouId, flowId, initialContent, initialDate, flowOrder }: { senkouId: string; flowId: string; initialContent?: string; initialDate?: string; flowOrder:number}) {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState(initialContent || "");
   const [date, setDate] = useState(initialDate || "");
@@ -20,6 +20,7 @@ export default function FlowEditButton({ senkouId, flowId, initialContent, initi
       [flowId]: {
         ...(content && { content }),
         ...(date && { date }),
+        ...({flowOrder})
       },
     };
 

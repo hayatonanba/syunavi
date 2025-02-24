@@ -37,7 +37,7 @@ export default function PostButton(userData: { userData: UserAuthData }) {
     setIsModalOpen(false);
   };
 
-  const handleChange = (index, field, value) => {
+  const handleChange = (index : number, field : string, value : string) => {
     const updatedFlows = flows.map((flow, i) =>
       i === index ? { ...flow, [field]: value } : flow
     );
@@ -48,9 +48,8 @@ export default function PostButton(userData: { userData: UserAuthData }) {
     e.preventDefault();
     
     // 既存の flows 配列からオブジェクトを作成
-    const flowsData = flows.reduce((acc, flow) => {
+    const flowsData: Record<string, { content: string; date?: string; flowOrder: number }> = flows.reduce((acc, flow) => {
       const { flowname, content, date, floworder } = flow;
-      // flowname が設定されている場合のみ追加
       if (flowname) {
         acc[flowname] = {
           content,
@@ -59,18 +58,19 @@ export default function PostButton(userData: { userData: UserAuthData }) {
         };
       }
       return acc;
-    }, {});
-
-    // 企業メモとリンク集を固定の flowOrder で追加（date は含めない）
+    }, {} as Record<string, { content: string; date?: string; flowOrder: number }>);
+    
+    // 企業メモとリンク集を固定の flowOrder で追加
     flowsData["企業メモ"] = {
       content: companyMemo,
       flowOrder: 0,
     };
+    
     flowsData["リンク集"] = {
       content: linkMemo,
       flowOrder: -1,
     };
-
+    
     const jsondata = JSON.stringify({
       userId: userData.userData.id,
       companyName: company,
